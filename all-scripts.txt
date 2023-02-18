@@ -26,7 +26,6 @@ class App extends Component {
   render() {
     return (      
        <BrowserRouter>
-        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"></meta>
         <NavBar/>
         <Background/>
         <div id='main'>
@@ -116,10 +115,10 @@ function Background() {
     font-size:100px;
     font-weight: 400;
     position: relative;
-    top: -20px;
     text-shadow: 0px 4px 10px #000000;
     transition: 0.2s;
     z-index: 2;
+    transition: .2s;
 }
 
 #home-title:hover{
@@ -154,21 +153,21 @@ function Background() {
     width: 100vw;
     height: 100vh;
     background: rgb(0,0,0);
-    background: linear-gradient(180deg, rgb(7, 7, 7) 0%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
     z-index: 1;
 }
 
 /* Home.js */
-import React from "react";
+import React, { useRef } from "react";
 import './Home.css';
-import { useNavigate } from "react-router-dom";
-import {useState, useEffect} from 'react';
+import { useAsyncError, useNavigate } from "react-router-dom";
+import {useState, useEffect, useMemo} from 'react';
 
 function Home() {
     let navigate = useNavigate()
 
     function showCategories(){
-        
+
     }
 
     return (
@@ -198,16 +197,54 @@ function Home() {
                 }}
                 onClick={() => showCategories()}
             >
-                <span
-                    id='home-title'
-                >
-                    {"Programmer's Garage </>"}
-                </span>
+                <Title/>
             </div>
         </>  
     );
   }
   
+
+function Title(){
+
+    const [pos, setPos] = useState({x:0, y:0})
+    
+    const mouse_pos = useRef({x:0, y:0})
+
+    function handleMouseMove(e){
+        mouse_pos.current.x = e.pageX
+        mouse_pos.current.y = e.pageY
+    }
+
+    useEffect(() => {
+        window.addEventListener("mousemove",handleMouseMove)
+        const interval = setInterval(() => {
+            let vw = window.innerWidth;
+            let vh = window.innerHeight;
+
+            setPos({
+                x: (vw/2-mouse_pos.current.x) / 35,
+                y: (vh/2-mouse_pos.current.y) / 20,
+            })
+        }, 100)
+        return () => {
+            window.removeEventListener("mousemove",handleMouseMove)
+            clearInterval(interval)
+        }
+    }, [])
+
+    return(
+        <div
+            id='home-title'
+            style={{
+                left: pos.x,
+                top: pos.y,
+            }}
+        >
+            {"Programmer's Garage </>"}
+        </div>
+    )
+}
+
 function BackgroundText(){
 
     const [heightLimits, setHeightLimits] = useState(false)
@@ -253,6 +290,11 @@ function BackgroundText(){
         </>
     )
 }
+
+
+<titulo/>
+
+
 
 export default Home;
 
