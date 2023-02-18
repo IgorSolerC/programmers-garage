@@ -17,6 +17,7 @@ class App extends Component {
           <Background/>
           <div id='main'>
             <Routes>
+              <Route path="/Experimento-React/" element={<Home/>}/>
               <Route path="/" element={<Home/>}/>
               <Route path="/wordle" element={<Wordle/>}/>
             </Routes>
