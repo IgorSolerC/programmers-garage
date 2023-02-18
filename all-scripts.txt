@@ -26,16 +26,17 @@ class App extends Component {
   render() {
     return (      
        <BrowserRouter>
-          <NavBar/>
-          <Background/>
-          <div id='main'>
-            <Routes>
-              <Route path="/Experimento-React/" element={<Home/>}/>
-              <Route path="/" element={<Home/>}/>
-              <Route path="/wordle" element={<Wordle/>}/>
-            </Routes>
-          </div>
-        </BrowserRouter>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"></meta>
+        <NavBar/>
+        <Background/>
+        <div id='main'>
+          <Routes>
+            <Route path="/Experimento-React/" element={<Home/>}/>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/wordle" element={<Wordle/>}/>
+          </Routes>
+        </div>
+      </BrowserRouter>
     );
   }
 }
@@ -80,7 +81,7 @@ def main():
     concat = []
     get_files(PATH, concat)
     concat = '\n\n'.join(concat)
-    with open(PATH+'\\aux-scripts\\all-scripts.txt', "w+") as f:
+    with open(PATH+'\\..\\public\\all-scripts.txt', "w+") as f:
         f.write(concat)
     
 
@@ -124,7 +125,7 @@ function Background() {
 #home-title:hover{
     --h-padding: 70px;
     --v-padding: 20px;
-    background-color: #ffffff09;
+    background-color: #161616bb;
     border-radius: 1000px;
     padding-top: var(--v-padding);
     padding-bottom: var(--v-padding);
@@ -137,6 +138,7 @@ function Background() {
 
 #home-background-code{
     font-family: Consolas, monaco, monospace;
+    /* display: none; */
     white-space: pre-wrap;
     padding: 20px;
     position: fixed;
@@ -159,14 +161,15 @@ function Background() {
 /* Home.js */
 import React from "react";
 import './Home.css';
-
 import { useNavigate } from "react-router-dom";
-import {useState, useEffect, useRef} from 'react';
-import Background from "../Background";
+import {useState, useEffect} from 'react';
 
 function Home() {
-
     let navigate = useNavigate()
+
+    function showCategories(){
+        
+    }
 
     return (
         <>
@@ -193,7 +196,7 @@ function Home() {
                     alignItems:'center',
                     height: '100vh',
                 }}
-                onClick={() => navigate('/wordle')}
+                onClick={() => showCategories()}
             >
                 <span
                     id='home-title'
@@ -207,48 +210,45 @@ function Home() {
   
 function BackgroundText(){
 
-    const [backgroundTxt, setBackgroundTxt] = useState('')
-    const [heightLimits, setHeightLimits] = useState({min: 0, max: 0})
+    const [heightLimits, setHeightLimits] = useState(false)
 
     useEffect(() => {
         /* Executa fetch dos dados */
-        let url = 'https://raw.githubusercontent.com/IgorSolerC/Experimento-React/master/src/home/Home.js'
+        // let url = 'https://raw.githubusercontent.com/IgorSolerC/Experimento-React/master/src/home/Home.js'
+        let url = '/Experimento-React/all-scripts.txt'
         fetch(url)
         .then((resp) => resp.text())
-        .then((txt) => setBackgroundTxt(txt))
+        .then((txt) => {
+            /* Set velocidade do texto, e animação do texto */
+            // Usa como base o tamanho do element do texto
+            var el = document.getElementById('home-background-code')
+            el.textContent = txt
+            setHeightLimits(true)
+            
+        })
         .catch((error) => console.log(error))
-    }, [])
+    }, []) 
     
-    useEffect(() => {
-        /* Set velocidade do texto, e animação do texto */
-        // Usa como base o tamanho do element do texto
-        var el = document.getElementById('home-background-code')
-        var txt_spd = el.offsetHeight / 50
-        el.style.animationDuration = txt_spd + 's'
-        el.style.animationName = 'scroll'
-        console.log(txt_spd)
-        setHeightLimits(
-            {
-                min: -el.offsetHeight+'px',
-                max: el.offsetHeight+200 +'px',
-            }
-        )
-    })
 
     return(
         <>
             <style>
-                {`
+                { heightLimits && `
                     @keyframes scroll {
-                        0% {top: `+heightLimits.min+`}
-                        100% {top: `+heightLimits.max+`}
+                        0% {top: `+(-document.getElementById('home-background-code').offsetHeight)+`px}
+                        100% {top: 100vh}
+                    }
+
+                    #home-background-code{
+                        display: inline;
+                        animation-duration: `+document.getElementById('home-background-code').offsetHeight/75+`s;
+                        animation-name: scroll;
                     }
                 `}
             </style>
             <div
                 id='home-background-code'
                 >
-                {backgroundTxt}
             </div>
         </>
     )
@@ -357,7 +357,7 @@ function NavBar() {
             fontWeight: '400'
           }}
           >
-          {"Programmers Garage </>"}
+          {"Programmer's Garage </>"}
         </span>
       </div>
     </div>
