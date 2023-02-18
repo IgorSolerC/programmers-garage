@@ -13,16 +13,16 @@ class App extends Component {
   render() {
     return (      
        <BrowserRouter>
-          <NavBar/>
-          <Background/>
-          <div id='main'>
-            <Routes>
-              <Route path="/Experimento-React/" element={<Home/>}/>
-              <Route path="/" element={<Home/>}/>
-              <Route path="/wordle" element={<Wordle/>}/>
-            </Routes>
-          </div>
-        </BrowserRouter>
+        <NavBar/>
+        <Background/>
+        <div id='main'>
+          <Routes>
+            <Route path="/Experimento-React/" element={<Home/>}/>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/wordle" element={<Wordle/>}/>
+          </Routes>
+        </div>
+      </BrowserRouter>
     );
   }
 }

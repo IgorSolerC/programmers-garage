@@ -24,7 +24,7 @@ def main():
     concat = []
     get_files(PATH, concat)
     concat = '\n\n'.join(concat)
-    with open(PATH+'\\aux-scripts\\all-scripts.txt', "w+") as f:
+    with open(PATH+'\\..\\public\\all-scripts.txt', "w+") as f:
         f.write(concat)
     
 

@@ -24,7 +24,7 @@ function NavBar() {
             fontWeight: '400'
           }}
           >
-          {"Programmers Garage </>"}
+          {"Programmer's Garage </>"}
         </span>
       </div>
     </div>

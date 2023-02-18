@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useRef } from "react";
 import './Home.css';
-import { useNavigate } from "react-router-dom";
-import {useState, useEffect} from 'react';
+import {useNavigate} from "react-router-dom";
+import {useState, useEffect, useMemo} from 'react';
 
 function Home() {
-
     let navigate = useNavigate()
+
+    function showCategories(){
+
+    }
 
     return (
         <>
@@ -20,10 +23,57 @@ function Home() {
                     }
                 `}
             </style>
-            <div
-                id='home-background-code-gradient'
-            ></div>
+            <div id='home-background-code-gradient'/>
             <BackgroundText/>
+            <Title
+                onClick={showCategories}
+            />
+        </>  
+    );
+  }
+  
+
+function Title({onClick}){
+
+    const [pos, setPos] = useState({x:0, y:0})
+    const [titleAnim, setTitleAnim] = useState([0, 0, 0])
+
+    const mouse_pos = useRef({x:0, y:0})
+
+    function handleMouseMove(e){
+        mouse_pos.current.x = e.pageX
+        mouse_pos.current.y = e.pageY
+    }
+
+    useEffect(() => {
+        window.addEventListener("mousemove",handleMouseMove)
+        const interval = setInterval(() => {
+            let vw = window.innerWidth;
+            let vh = window.innerHeight;
+
+            setPos({
+                x: (vw/2-mouse_pos.current.x) / 35,
+                y: (vh/2-mouse_pos.current.y) / 20,
+            })
+        }, 100)
+        return () => {
+            window.removeEventListener("mousemove",handleMouseMove)
+            clearInterval(interval)
+        }
+    }, [])
+
+    return(
+        <>
+            <style>
+                {`
+                    .home-title-part{
+                        transition: .6s;
+                        transition-timing-function: cubic-bezier(0.85, 0.01, 0.16, 0.99);
+                        display: inline-block;
+                        position: relative;
+                    }
+                `}
+            </style>
             <div
                 id='home-title-box'
                 style={{
@@ -32,18 +82,26 @@ function Home() {
                     alignItems:'center',
                     height: '100vh',
                 }}
-                onClick={() => navigate('/wordle')}
+                onClick={() => onClick()}
             >
-                <span
+                <div
                     id='home-title'
+                    style={{
+                        left: pos.x,
+                        top: pos.y,
+                    }}
+                    onMouseEnter={() => setTitleAnim([50, -925, 0])}
+                    onMouseLeave={() => setTitleAnim([-10, 10, 10])}
                 >
-                    {"Programmer's Garage </>"}
-                </span>
+                    <div className="home-title-part" style={{left: titleAnim[0]+'px'}}>{"Programmer's Garage"}</div>
+                    <div className="home-title-part" style={{left: titleAnim[1]+'px'}}>{"<"}</div>
+                    <div className="home-title-part" style={{left: titleAnim[2]+'px'}}>{"/>"}</div>
+                </div>
             </div>
-        </>  
-    );
-  }
-  
+        </>
+    )
+}
+
 function BackgroundText(){
 
     const [heightLimits, setHeightLimits] = useState(false)
@@ -58,36 +116,26 @@ function BackgroundText(){
             /* Set velocidade do texto, e animação do texto */
             // Usa como base o tamanho do element do texto
             var el = document.getElementById('home-background-code')
-            var txt_spd = el.offsetHeight / 50
             el.textContent = txt
-            el.style.animationDuration = txt_spd + 's'
-            el.style.animationName = 'scroll'
-            console.log(el.offsetHeight)
-            setHeightLimits(
-                {
-                    min: -el.offsetHeight+'px', 
-                    max: el.offsetHeight+200 +'px',
-                }
-            )
-            }).then()
+            setHeightLimits(true)
+            
+        })
         .catch((error) => console.log(error))
-
-
-
     }, []) 
     
-
     return(
         <>
             <style>
                 { heightLimits && `
                     @keyframes scroll {
-                        0% {top: `+heightLimits.min+`}
-                        100% {top: `+heightLimits.max+`}
+                        0% {top: `+(-document.getElementById('home-background-code').offsetHeight)+`px}
+                        100% {top: 100vh}
                     }
 
                     #home-background-code{
                         display: inline;
+                        animation-duration: `+document.getElementById('home-background-code').offsetHeight/75+`s;
+                        animation-name: scroll;
                     }
                 `}
             </style>
