@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from "react";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import './App.css'
+
+import NavBar from './Nav';
+import Background from './Background';
+import Home from './home/Home'
+import Wordle from './wordle/Wordle'
+
+
+class App extends Component {
+  render() {
+    return (      
+       <BrowserRouter>
+          <NavBar/>
+          <Background/>
+          <div id='main'>
+            <Routes>
+              <Route path="/" element={<Home/>}/>
+              <Route path="/wordle" element={<Wordle/>}/>
+            </Routes>
+          </div>
+        </BrowserRouter>
+    );
+  }
 }
 
 export default App;
