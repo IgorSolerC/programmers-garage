@@ -1,14 +1,12 @@
 import React, { useRef } from "react";
 import './Home.css';
 import {useNavigate} from "react-router-dom";
-import {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect} from 'react';
 
 function Home() {
-    let navigate = useNavigate()
 
-    function showCategories(){
-
-    }
+    const [crntCategory, setCrntCategory] = useState('title')
+    const [hideCategory, setHideCategories] = useState(null)
 
     return (
         <>
@@ -25,18 +23,118 @@ function Home() {
             </style>
             <div id='home-background-code-gradient'/>
             <BackgroundText/>
-            <Title
-                onClick={showCategories}
-            />
+            {
+                crntCategory == 'title'
+                    ?
+                    <Title
+                        hide={hideCategory=='title'}
+                        hideFunction={() => setHideCategories('title')}
+                        onHide={setCrntCategory}
+                    />
+                    :
+                crntCategory == 'pages'
+                    ?
+                    <Pages
+                        hide={hideCategory=='pages'}
+                        hideFunction={() => setHideCategories('pages')}
+                        onHide={setCrntCategory}
+                    />
+                    :
+                undefined
+            }
         </>  
     );
   }
   
 
-function Title({onClick}){
+function Title({hideFunction, hide, onHide}){
+
+    const [nextPage, setNextPage] = useState(false)
+
+    return(
+        <Menu
+            hide={hide}
+            onHide={() => onHide(nextPage)}
+        >
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('pages')
+                }}
+                hide={hide}
+                offsetArray={[50, -925, 0]}
+                text="Programmer's Garage"
+                id='home-title'
+            />                                
+        </Menu>
+    )
+}
+
+function Pages({hideFunction, hide, onHide}){
+    
+    let navigate = useNavigate()
+    const [nextPage, setNextPage] = useState(false)
+
+    return(
+        <Menu
+            hide={hide}
+            onHide={() => onHide(nextPage)}
+        >
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('title')
+                }}
+                hide={hide}
+                offsetArray={[15, -78, 0]}
+                text='Back'
+                id='home-back'
+            />  
+            <AnimatedTitle
+                hide={hide}
+                offsetArray={[50, -340, 0]}
+                text='Páginas'
+                id='pages-title'
+            />        
+            <AnimatedTitle
+                onClick={() => navigate('/wordle')}
+                hideFunction={hideFunction}
+                hide={hide}
+                offsetArray={[30, -185, 0]}
+                text="Wordle"
+                id='pages-element'
+            />                              
+        </Menu>
+    )
+}
+
+function AnimatedTitle({onClick, hide, offsetArray, text, id, setNextPage}){
+
+    const [titleAnim, setTitleAnim] = useState([-10, 10, 10])
+
+    return(
+        <div
+            id={id}
+            className='animated-code-component'
+            onMouseEnter={() => !hide && setTitleAnim(offsetArray)} // Checa se está hide, para não zoar a animação
+            onMouseLeave={() => !hide && setTitleAnim([-10, 10, 10])}
+            onClick={onClick}
+        >
+            <div className="home-title-part" style={{left: titleAnim[0]+'px'}}>{text}</div>
+            <div className="home-title-part" style={{left: titleAnim[1]+'px'}}>{"<"}</div>
+            <div className="home-title-part" style={{left: titleAnim[2]+'px'}}>{"/>"}</div>         
+        </div>
+    )
+}
+
+function Menu({hide, onHide, children}){
+    
+    const HIDE_DURATION = 0.5
+    useEffect(() => {
+        if(hide){
+            setTimeout(onHide, HIDE_DURATION*1000)
+        }
+    }, [hide])
 
     const [pos, setPos] = useState({x:0, y:0})
-    const [titleAnim, setTitleAnim] = useState([0, 0, 0])
 
     const mouse_pos = useRef({x:0, y:0})
 
@@ -77,26 +175,13 @@ function Title({onClick}){
             <div
                 id='home-title-box'
                 style={{
-                    display:'flex',
-                    justifyContent: 'center',
-                    alignItems:'center',
-                    height: '100vh',
+                    marginLeft: hide && '100vw',
+                    transition: 'margin-left '+HIDE_DURATION+'s, left .2s, top .2s',
+                    left: pos.x,
+                    top: pos.y,
                 }}
-                onClick={() => onClick()}
             >
-                <div
-                    id='home-title'
-                    style={{
-                        left: pos.x,
-                        top: pos.y,
-                    }}
-                    onMouseEnter={() => setTitleAnim([50, -925, 0])}
-                    onMouseLeave={() => setTitleAnim([-10, 10, 10])}
-                >
-                    <div className="home-title-part" style={{left: titleAnim[0]+'px'}}>{"Programmer's Garage"}</div>
-                    <div className="home-title-part" style={{left: titleAnim[1]+'px'}}>{"<"}</div>
-                    <div className="home-title-part" style={{left: titleAnim[2]+'px'}}>{"/>"}</div>
-                </div>
+                {children}
             </div>
         </>
     )
