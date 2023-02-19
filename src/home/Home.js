@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import './Home.css';
 import {useNavigate} from "react-router-dom";
 import {useState, useEffect} from 'react';
+import WordleBoard from '../wordle/Wordle'
 
 function Home() {
 
@@ -40,12 +41,48 @@ function Home() {
                         onHide={setCrntCategory}
                     />
                     :
+                crntCategory == 'wordle'
+                    ?
+                    <Wordle
+                        hide={hideCategory=='wordle'}
+                        hideFunction={() => setHideCategories('wordle')}
+                        onHide={setCrntCategory}
+                    />
+                    :
                 undefined
             }
         </>  
     );
   }
   
+function Wordle({hideFunction, hide, onHide}){
+
+    const [nextPage, setNextPage] = useState(false)
+
+    return(
+        <Menu
+            hide={hide}
+            onHide={() => onHide(nextPage)}
+        >
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('pages')
+                }}
+                hide={hide}
+                offsetArray={[15, -78, 0]}
+                text='Back'
+                id='home-back'
+            />  
+            <AnimatedTitle
+                hide={hide}
+                offsetArray={[50, -305, 0]}
+                text='Wordle'
+                id='pages-title'
+            />        
+            <WordleBoard/>                              
+        </Menu>
+    )
+}
 
 function Title({hideFunction, hide, onHide}){
 
@@ -71,7 +108,6 @@ function Title({hideFunction, hide, onHide}){
 
 function Pages({hideFunction, hide, onHide}){
     
-    let navigate = useNavigate()
     const [nextPage, setNextPage] = useState(false)
 
     return(
@@ -95,7 +131,9 @@ function Pages({hideFunction, hide, onHide}){
                 id='pages-title'
             />        
             <AnimatedTitle
-                onClick={() => navigate('/wordle')}
+                onClick={() => {
+                    hideFunction(); setNextPage('wordle')
+                }}
                 hideFunction={hideFunction}
                 hide={hide}
                 offsetArray={[30, -185, 0]}

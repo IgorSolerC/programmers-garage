@@ -6,7 +6,7 @@ import './App.css'
 import NavBar from './Nav';
 import Background from './Background';
 import Home from './home/Home'
-import Wordle from './wordle/Wordle'
+import WordleBoard from './wordle/Wordle'
 
 
 class App extends Component {
@@ -19,7 +19,7 @@ class App extends Component {
           <Routes>
             <Route path="/Experimento-React/" element={<Home/>}/>
             <Route path="/" element={<Home/>}/>
-            <Route path="/wordle" element={<Wordle/>}/>
+            <Route path="/wordle" element={<WordleBoard/>}/>
           </Routes>
         </div>
       </BrowserRouter>
