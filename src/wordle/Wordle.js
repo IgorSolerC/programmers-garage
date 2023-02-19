@@ -1,33 +1,71 @@
 import React from "react";
+import { useState } from "react";
 import './Wordle.css'
 
 function WordleBoard(){
 
-    const qtd_rows = 6    
-    const qtd_columns = 5
+    const qtdRows = 6    
+    const qtdColumns = 5
 
-    var crnt_row = 0
+    var crntRow = 0
+
+    const [selectedCell, setSelectedCell] = useState(false)
 
     return (
         <div
             className="wordle-board"
         >
-            {[...Array(qtd_rows)].map((_, idx) => {
+            {[...Array(qtdRows)].map((_, idx) => {
 
-                let crtn_row_class = idx == crnt_row ? 'wordle-current-row ' : ''
+                let isCrntRow = idx == crntRow
+                let crtnRowClass = isCrntRow ? 'wordle-current-row ' : ''
 
                 return(
-                    <div className={"wordle-row " + crtn_row_class} key={idx}>
-                        {[...Array(qtd_columns)].map((_, idx) => (
-                            <div className="wordle-cell" key={idx}></div>
+                    <div className={"wordle-row " + crtnRowClass} key={idx}>
+                        {[...Array(qtdColumns)].map((_, cell_idx) => (
+                            <WordleCell
+                                selectedCell={selectedCell}
+                                setSelectedCell={setSelectedCell}
+                                row={idx}
+                                col={cell_idx}
+                                isSelectable={isCrntRow}
+                                key={idx + '-' + cell_idx}
+                            />
                         ))}
                     </div>
                 )
             })}
         </div>
     );
-  }
+}
 
+function WordleCell({key, row, col, isSelectable, selectedCell, setSelectedCell}){
+
+    var isSelected = selectedCell.row == row && selectedCell.col == col
+    var selectedClass = isSelected ? 'is-selected ' : ''
+
+    return (
+        <div 
+            onClick={
+                () => {
+                    if(isSelectable){ // Se é possível digitar nesta row
+                        // Logica de seleção
+                        if(isSelected){
+                            setSelectedCell(false)
+                        } else {                     
+                            setSelectedCell({row, col})
+                        }
+                    }
+                }
+            }
+            className={"wordle-cell " + selectedClass}
+            key={key}
+        >
+
+        </div>
+    )
+}
 
 export default WordleBoard;
+
 
