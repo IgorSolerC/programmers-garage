@@ -19,7 +19,7 @@ import './App.css'
 import NavBar from './Nav';
 import Background from './Background';
 import Home from './home/Home'
-import Wordle from './wordle/Wordle'
+import WordleBoard from './wordle/Wordle'
 
 
 class App extends Component {
@@ -32,7 +32,7 @@ class App extends Component {
           <Routes>
             <Route path="/Experimento-React/" element={<Home/>}/>
             <Route path="/" element={<Home/>}/>
-            <Route path="/wordle" element={<Wordle/>}/>
+            <Route path="/wordle" element={<WordleBoard/>}/>
           </Routes>
         </div>
       </BrowserRouter>
@@ -111,17 +111,49 @@ function Background() {
   export default Background;
 
 /* Home.css */
+
+#home-back{
+    margin-top: calc(-100vh + 190px);
+    margin-left: calc(-100vw + 300px);
+    font-size:35px;
+    font-weight: 400;
+}
+
+#home-back:hover{
+    --h-padding: 40px;
+    --v-padding: 10px;
+    padding-top: var(--v-padding);
+    padding-bottom: var(--v-padding);
+    padding-left: var(--h-padding);
+    padding-right: var(--h-padding);
+}
+
 #home-title{
     font-size:100px;
     font-weight: 400;
-    position: relative;
+}
+
+#pages-title{
+    margin-top: calc(-100vh + 200px);
+    font-size:100px;
+    font-weight: 400;
+}
+
+#pages-element{
+    font-size:60px;
+    font-weight: 400;
+}
+
+.animated-code-component{
+    position: absolute;
     text-shadow: 0px 4px 10px #000000;
     transition: 0.2s;
     z-index: 2;
     transition: .2s;
+    white-space:nowrap;
 }
 
-#home-title:hover{
+.animated-code-component:hover{
     --h-padding: 70px;
     --v-padding: 20px;
     background-color: #161616bb;
@@ -133,6 +165,10 @@ function Background() {
     text-shadow: 0px 4px 10px #000000b2; 
     transition: 0.2s;
     cursor: pointer;
+}
+
+#pages-title:hover{
+    cursor: default;
 }
 
 #home-background-code{
@@ -155,20 +191,37 @@ function Background() {
     background: rgb(0,0,0);
     background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
     z-index: 1;
+}
+
+#home-title-box{
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    z-index: 10;
+    animation-name: enter;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0, 0, 0.07, 1);
+}
+
+@keyframes enter {
+    0% {margin-top: -100vh}
+    100% {margin-top: 0px}
 }
 
 /* Home.js */
 import React, { useRef } from "react";
 import './Home.css';
-import { useAsyncError, useNavigate } from "react-router-dom";
-import {useState, useEffect, useMemo} from 'react';
+import {useNavigate} from "react-router-dom";
+import {useState, useEffect} from 'react';
+import WordleBoard from '../wordle/Wordle'
 
 function Home() {
-    let navigate = useNavigate()
 
-    function showCategories(){
-
-    }
+    const [crntCategory, setCrntCategory] = useState('title')
+    const [hideCategory, setHideCategories] = useState(null)
 
     return (
         <>
@@ -183,31 +236,158 @@ function Home() {
                     }
                 `}
             </style>
-            <div
-                id='home-background-code-gradient'
-            ></div>
+            <div id='home-background-code-gradient'/>
             <BackgroundText/>
-            <div
-                id='home-title-box'
-                style={{
-                    display:'flex',
-                    justifyContent: 'center',
-                    alignItems:'center',
-                    height: '100vh',
-                }}
-                onClick={() => showCategories()}
-            >
-                <Title/>
-            </div>
+            {
+                crntCategory == 'title'
+                    ?
+                    <Title
+                        hide={hideCategory=='title'}
+                        hideFunction={() => setHideCategories('title')}
+                        onHide={setCrntCategory}
+                    />
+                    :
+                crntCategory == 'pages'
+                    ?
+                    <Pages
+                        hide={hideCategory=='pages'}
+                        hideFunction={() => setHideCategories('pages')}
+                        onHide={setCrntCategory}
+                    />
+                    :
+                crntCategory == 'wordle'
+                    ?
+                    <Wordle
+                        hide={hideCategory=='wordle'}
+                        hideFunction={() => setHideCategories('wordle')}
+                        onHide={setCrntCategory}
+                    />
+                    :
+                undefined
+            }
         </>  
     );
   }
   
+function Wordle({hideFunction, hide, onHide}){
 
-function Title(){
+    const [nextPage, setNextPage] = useState(false)
+
+    return(
+        <Menu
+            hide={hide}
+            onHide={() => onHide(nextPage)}
+        >
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('pages')
+                }}
+                hide={hide}
+                offsetArray={[15, -78, 0]}
+                text='Back'
+                id='home-back'
+            />  
+            <AnimatedTitle
+                hide={hide}
+                offsetArray={[50, -305, 0]}
+                text='Wordle'
+                id='pages-title'
+            />        
+            <WordleBoard/>                              
+        </Menu>
+    )
+}
+
+function Title({hideFunction, hide, onHide}){
+
+    const [nextPage, setNextPage] = useState(false)
+
+    return(
+        <Menu
+            hide={hide}
+            onHide={() => onHide(nextPage)}
+        >
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('pages')
+                }}
+                hide={hide}
+                offsetArray={[50, -925, 0]}
+                text="Programmer's Garage"
+                id='home-title'
+            />                                
+        </Menu>
+    )
+}
+
+function Pages({hideFunction, hide, onHide}){
+    
+    const [nextPage, setNextPage] = useState(false)
+
+    return(
+        <Menu
+            hide={hide}
+            onHide={() => onHide(nextPage)}
+        >
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('title')
+                }}
+                hide={hide}
+                offsetArray={[15, -78, 0]}
+                text='Back'
+                id='home-back'
+            />  
+            <AnimatedTitle
+                hide={hide}
+                offsetArray={[50, -340, 0]}
+                text='Páginas'
+                id='pages-title'
+            />        
+            <AnimatedTitle
+                onClick={() => {
+                    hideFunction(); setNextPage('wordle')
+                }}
+                hideFunction={hideFunction}
+                hide={hide}
+                offsetArray={[30, -185, 0]}
+                text="Wordle"
+                id='pages-element'
+            />                              
+        </Menu>
+    )
+}
+
+function AnimatedTitle({onClick, hide, offsetArray, text, id, setNextPage}){
+
+    const [titleAnim, setTitleAnim] = useState([-10, 10, 10])
+
+    return(
+        <div
+            id={id}
+            className='animated-code-component'
+            onMouseEnter={() => !hide && setTitleAnim(offsetArray)} // Checa se está hide, para não zoar a animação
+            onMouseLeave={() => !hide && setTitleAnim([-10, 10, 10])}
+            onClick={onClick}
+        >
+            <div className="home-title-part" style={{left: titleAnim[0]+'px'}}>{text}</div>
+            <div className="home-title-part" style={{left: titleAnim[1]+'px'}}>{"<"}</div>
+            <div className="home-title-part" style={{left: titleAnim[2]+'px'}}>{"/>"}</div>         
+        </div>
+    )
+}
+
+function Menu({hide, onHide, children}){
+    
+    const HIDE_DURATION = 0.5
+    useEffect(() => {
+        if(hide){
+            setTimeout(onHide, HIDE_DURATION*1000)
+        }
+    }, [hide])
 
     const [pos, setPos] = useState({x:0, y:0})
-    
+
     const mouse_pos = useRef({x:0, y:0})
 
     function handleMouseMove(e){
@@ -233,15 +413,29 @@ function Title(){
     }, [])
 
     return(
-        <div
-            id='home-title'
-            style={{
-                left: pos.x,
-                top: pos.y,
-            }}
-        >
-            {"Programmer's Garage </>"}
-        </div>
+        <>
+            <style>
+                {`
+                    .home-title-part{
+                        transition: .6s;
+                        transition-timing-function: cubic-bezier(0.85, 0.01, 0.16, 0.99);
+                        display: inline-block;
+                        position: relative;
+                    }
+                `}
+            </style>
+            <div
+                id='home-title-box'
+                style={{
+                    marginLeft: hide && '100vw',
+                    transition: 'margin-left '+HIDE_DURATION+'s, left .2s, top .2s',
+                    left: pos.x,
+                    top: pos.y,
+                }}
+            >
+                {children}
+            </div>
+        </>
     )
 }
 
@@ -266,7 +460,6 @@ function BackgroundText(){
         .catch((error) => console.log(error))
     }, []) 
     
-
     return(
         <>
             <style>
@@ -290,11 +483,6 @@ function BackgroundText(){
         </>
     )
 }
-
-
-<titulo/>
-
-
 
 export default Home;
 
@@ -408,17 +596,352 @@ function NavBar() {
   
 export default NavBar;
 
-/* Wordle.js */
-import React from "react";
+/* suporte.js */
+export function IsLetter(key) {
+    return /^[a-zA-Z]$/.test(key);
+}
 
-function Wordle(){
+export function Mod(n, m){
+    return (n % m + m) % m
+}
+
+export function MakeMatriz(nrows, ncols, val){
+    let row = new Array(ncols); for (let i=0; i<row.length; ++i) row[i] = val;
+    let matriz = new Array(nrows); for (let i=0; i<matriz.length; ++i) matriz[i] = [...row];
+    return matriz
+}
+
+/* Wordle.css */
+.wordle-board{
+    padding: 10px;
+    margin-top: 110px;
+    box-shadow: 0px 0px 10px 0px rgb(0, 102, 255);
+    outline: 1px solid rgb(0, 102, 255);
+    border-radius: 5px;
+}
+
+.wordle-row{
+    /* outline: 1px solid rgb(0, 255, 242); */
+}
+
+.wordle-current-row > .wordle-cell{
+    outline: 1px solid rgb(102, 102, 102);
+    box-shadow: 0px 0px 10px 0px rgb(102, 102, 102); 
+}
+
+.wordle-current-row > .wordle-cell:hover{
+    box-shadow: 0px 0px 20px 0px rgb(102, 102, 102);
+    outline: 1px solid rgb(102, 102, 102);
+}
+
+.wordle-current-row > .wordle-cell.is-selected{
+    outline: 1px solid rgb(255, 255, 255);
+    box-shadow: 0px 0px 10px 0px rgb(255, 255, 255);
+}
+
+.wordle-current-row > .wordle-cell.is-selected:hover{
+    box-shadow: 0px 0px 20px 0px rgb(255, 255, 255);
+    outline: 1px solid rgb(255, 255, 255);
+}
+
+.wordle-cell.is-correct{
+    outline: 1px solid rgb(0, 255, 0);
+    box-shadow: 0px 0px 10px 0px rgb(0, 255, 0);
+}
+
+.wordle-cell.is-correct:hover{
+    box-shadow: 0px 0px 20px 0px rgb(0, 255, 0);
+    outline: 1px solid rgb(0, 255, 0);
+}
+
+.wordle-cell.is-missplaced{
+    outline: 1px solid rgb(255, 255, 0);
+    box-shadow: 0px 0px 10px 0px rgb(255, 255, 0);
+}
+
+.wordle-cell.is-missplaced:hover{
+    box-shadow: 0px 0px 20px 0px rgb(255, 255, 0);
+    outline: 1px solid rgb(255, 255, 0);
+}
+
+.wordle-cell.is-incorrect{
+    outline: 1px solid rgb(255, 0, 0);
+    box-shadow: 0px 0px 10px 0px rgb(255, 0, 0);
+}
+
+.wordle-cell.is-incorrect:hover{
+    box-shadow: 0px 0px 20px 0px rgb(255, 0, 0);
+    outline: 1px solid rgb(255, 0, 0);
+}
+
+.wordle-cell{
+    margin: 10px;
+    display: inline-flex;
+    vertical-align: top;
+    justify-content: center;
+    align-items: center;
+    outline: 1px solid rgb(53, 53, 53);
+    box-shadow: 0px 0px 10px 0px rgb(53, 53, 53);
+    width: 8vh;
+    height: 8vh;
+    border-radius: 3px;
+    transition: 0.5s;
+    font-size: 60px;
+    background-color: rgba(0, 0, 0, 0.479);
+}
+
+.wordle-cell:hover{
+    box-shadow: 0px 0px 20px 0px rgb(71, 71, 71);
+    outline: 1px solid rgb(53, 53, 53);
+}
+
+/* Wordle.js */
+import React from "react"; 
+import { useState, useEffect, useRef} from "react";
+import './Wordle.css'
+import {IsLetter, MakeMatriz, Mod} from '../suporte';
+
+function WordleBoard(){
+
+    var word = 'TESTE'
+
+    const qtdRows = 6    
+    const qtdColumns = 5
+
+    var crntRowIdx = useRef(0)
+
+    const [selectedCell, setSelectedCell] = useState({row:crntRowIdx.current, col:0})
+    const [charMatriz, setCharMatriz] = useState(MakeMatriz(qtdRows, qtdColumns, ' '))
+    const [resultsMatriz, setResultsMatriz] = useState(MakeMatriz(qtdRows, qtdColumns, ' '))
+    const [gameStatus, setGameStatus] = useState('running')
+
+    function checkAnyEmpty(){
+        let crntRow = charMatriz[crntRowIdx.current]
+        return !crntRow.every((el) => IsLetter(el))
+    }
+
+    function findNextEmptyCell(){
+        if(checkAnyEmpty()){
+            let i=1
+            let fount_empty = false
+            let selectedColIdx = selectedCell.col
+            let crntRow = charMatriz[crntRowIdx.current]
+            while (!fount_empty){
+                let crntColIdx = (selectedColIdx + i) % qtdColumns
+                if(!IsLetter(crntRow[crntColIdx]))
+                    return {row:crntRowIdx.current, col:crntColIdx}
+                i++
+            }
+        } else return false
+       
+    }
+
+    function findPreviousCell(loop=true){
+        if(selectedCell){
+            let selectedColIdx = selectedCell.col
+            let crntColIdx
+            if(loop){
+                crntColIdx = Mod((selectedColIdx - 1),qtdColumns)
+            } else {
+                crntColIdx = selectedColIdx - 1
+                if(crntColIdx <= 0){
+                    return false
+                }
+            }
+            return {row:crntRowIdx.current, col:crntColIdx}
+   
+        } else {
+            return {row:crntRowIdx.current, col:qtdColumns-1}
+        }
+    }
+
+    function findNextCell(loop=true){
+        if(selectedCell){
+            let selectedColIdx = selectedCell.col
+            let crntColIdx
+            if(loop){
+                crntColIdx = (selectedColIdx + 1) % qtdColumns
+            } else {
+                crntColIdx = selectedColIdx + 1
+                if(crntColIdx >= qtdColumns){
+                    return false
+                }
+            }
+            return {row:crntRowIdx.current, col:crntColIdx}
+   
+        } else {
+            return {row:crntRowIdx.current, col:0}
+        }
+    }
+
+    function writeChar(char, pos=null){
+        let row
+        let col
+        if(pos == null){
+            row = selectedCell.row
+            col = selectedCell.col
+        } else {
+            row = pos.row
+            col = pos.col
+        }
+        charMatriz[row][col] = char
+        setCharMatriz([...charMatriz])
+    }
+
+    function deleteChar(how){
+        if(selectedCell){
+            let selectedChar = charMatriz[selectedCell.row][selectedCell.col]
+            if(selectedChar == ' '){
+                let pos;
+                if(how == 'Backspace'){
+                    pos = findPreviousCell(false)
+                }
+                else if(how == 'Delete'){
+                    pos = findNextCell(false)
+                }
+                if(pos){
+                    setSelectedCell(pos)
+                    writeChar(' ', pos)
+                } else{
+                    if(how == 'Backspace'){
+                        setSelectedCell({row:crntRowIdx.current, col:0})
+                    }
+                    else if(how == 'Delete'){
+                        setSelectedCell({row:crntRowIdx.current, col:qtdColumns-1})
+                    }
+                }
+            } else {
+                writeChar(' ')
+            }
+        } else {
+            let pos;
+            if(how == 'Backspace'){
+                pos = {row:crntRowIdx.current, col:qtdColumns-1}
+            }
+            else if(how == 'Delete'){
+                pos = {row:crntRowIdx.current, col:0}
+            }
+            setSelectedCell(pos)
+            writeChar(' ', pos)
+        }
+    }
+
+    function updateResults(){
+        let perfect = true
+        for(let i=0;i<qtdColumns;i++){
+            if(word[i] === charMatriz[crntRowIdx.current][i]){ // Correct
+                resultsMatriz[crntRowIdx.current][i] = 'is-correct'
+            } else if (word.includes(charMatriz[crntRowIdx.current][i])){ // Missplaced
+                resultsMatriz[crntRowIdx.current][i] = 'is-missplaced'
+                perfect = false
+            } else {
+                resultsMatriz[crntRowIdx.current][i] = 'is-incorrect'
+                perfect = false
+            }
+        }
+        return perfect
+    }
+
+    function keyPress(e){
+        var key = e.key
+        if(gameStatus == 'running')
+            if (e.code == 'Enter'){
+                let isPerfect = updateResults()
+                if (isPerfect){
+                    setGameStatus('won')
+                    setSelectedCell(false)
+                } else {
+                    if(!checkAnyEmpty()){ // Checa se todas as cells estão preenchidas
+                        if(crntRowIdx.current < qtdRows-1){ // Checa se não é a ultima row
+                            crntRowIdx.current += 1
+                            setSelectedCell({row: crntRowIdx.current, col: 0})
+                        } else {
+                            setSelectedCell(false)
+                            if(!isPerfect){
+                                setGameStatus('lost')
+                            }
+                        }
+                    }
+                }
+            } else if (e.code == 'Space'){
+                setSelectedCell(findNextEmptyCell)
+            } else if (e.code == 'ArrowRight'){
+                setSelectedCell(findNextCell)
+            } else if (e.code == 'ArrowLeft'){
+                setSelectedCell(findPreviousCell)
+            } else if (e.code == 'Backspace'){
+                deleteChar("Backspace")
+            } else if (e.code == 'Delete'){
+                deleteChar("Delete")
+            } else if (selectedCell){
+                key = key.toUpperCase()
+                if(IsLetter(key)){
+                    writeChar(key)
+                    setSelectedCell(findNextEmptyCell)
+                }
+            }
+    }
+
+    useEffect(() => {
+        window.addEventListener("keyup", keyPress)
+        return(() => window.removeEventListener("keyup", keyPress))
+    })
+
     return (
-        <>
-            <div>
-                Este é o Wordle!
-            </div>
-        </>  
+        <div
+            className="wordle-board"
+        >
+            {[...Array(qtdRows)].map((_, idx) => {
+
+                let isCrntRow = idx == crntRowIdx.current
+                let crtnRowClass = isCrntRow ? 'wordle-current-row ' : ''
+
+                return(
+                    <div className={"wordle-row " + crtnRowClass} key={idx}>
+                        {[...Array(qtdColumns)].map((_, cell_idx) => (
+                            <React.Fragment key={cell_idx}>                                
+                                <WordleCell
+                                    gameStatus={gameStatus}
+                                    char={charMatriz[idx][cell_idx]}
+                                    status={resultsMatriz[idx][cell_idx]}
+                                    selectedCell={selectedCell}
+                                    setSelectedCell={setSelectedCell}
+                                    row={idx}
+                                    col={cell_idx}
+                                    isSelectable={isCrntRow}
+                                />
+                            </React.Fragment>
+                        ))}
+                    </div>
+                )
+            })}
+        </div>
     );
-  }
-  
-  export default Wordle;
+}
+
+function WordleCell({gameStatus, char, status, row, col, isSelectable, selectedCell, setSelectedCell}){
+
+    var isSelected = selectedCell.row == row && selectedCell.col == col
+    var className = 'wordle-cell '
+    className += isSelected ? 'is-selected' : ''
+    className += status
+    
+    return (
+        <div 
+            onClick={
+                () => {
+                    if(isSelectable && gameStatus == 'running'){ // Se é possível digitar nesta row
+                        setSelectedCell({row, col})
+                    }
+                }
+            }
+            className={className}
+        >
+            <span className="wordle-cell-char">{char}</span>
+        </div>
+    )
+}
+
+export default WordleBoard;
+
+
