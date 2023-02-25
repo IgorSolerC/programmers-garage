@@ -1,66 +1,80 @@
-.wordle-board{
-    padding: 10px;
+.wordle-board.neon{
     margin-top: 110px;
-    box-shadow: 0px 0px 10px 0px rgb(0, 102, 255);
+    /* padding: 10px; */
+    /* box-shadow: 0px 0px 10px 0px rgb(0, 102, 255);
     outline: 1px solid rgb(0, 102, 255);
+    border-radius: 5px; */
+}
+
+.wordle-endscreen.neon{
+    padding: 40px;
+    background-color: rgba(26, 26, 26, 0.918);
+    border: 1px solid rgb(102, 102, 102);
     border-radius: 5px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: pre-wrap;
 }
 
 .wordle-row{
-    /* outline: 1px solid rgb(0, 255, 242); */
 }
 
-.wordle-current-row > .wordle-cell{
+.wordle-current-row > .wordle-cell.neon{
     outline: 1px solid rgb(102, 102, 102);
     box-shadow: 0px 0px 10px 0px rgb(102, 102, 102); 
 }
 
-.wordle-current-row > .wordle-cell:hover{
+.wordle-current-row > .wordle-cell.neon:hover{
     box-shadow: 0px 0px 20px 0px rgb(102, 102, 102);
     outline: 1px solid rgb(102, 102, 102);
 }
 
-.wordle-current-row > .wordle-cell.is-selected{
+.wordle-current-row > .wordle-cell.neon.is-selected{
     outline: 1px solid rgb(255, 255, 255);
     box-shadow: 0px 0px 10px 0px rgb(255, 255, 255);
 }
 
-.wordle-current-row > .wordle-cell.is-selected:hover{
+.wordle-current-row > .wordle-cell.neon.is-selected:hover{
     box-shadow: 0px 0px 20px 0px rgb(255, 255, 255);
     outline: 1px solid rgb(255, 255, 255);
 }
 
-.wordle-cell.is-correct{
+.wordle-cell.neon.is-correct{
     outline: 1px solid rgb(0, 255, 0);
     box-shadow: 0px 0px 10px 0px rgb(0, 255, 0);
 }
 
-.wordle-cell.is-correct:hover{
+.wordle-cell.neon.neon.is-correct:hover{
     box-shadow: 0px 0px 20px 0px rgb(0, 255, 0);
     outline: 1px solid rgb(0, 255, 0);
 }
 
-.wordle-cell.is-missplaced{
+.wordle-cell.neon.is-missplaced{
     outline: 1px solid rgb(255, 255, 0);
     box-shadow: 0px 0px 10px 0px rgb(255, 255, 0);
 }
 
-.wordle-cell.is-missplaced:hover{
+.wordle-cell.neon.is-missplaced:hover{
     box-shadow: 0px 0px 20px 0px rgb(255, 255, 0);
     outline: 1px solid rgb(255, 255, 0);
 }
 
-.wordle-cell.is-incorrect{
+.wordle-cell.neon.is-incorrect{
     outline: 1px solid rgb(255, 0, 0);
     box-shadow: 0px 0px 10px 0px rgb(255, 0, 0);
 }
 
-.wordle-cell.is-incorrect:hover{
+.wordle-cell.neon.is-incorrect:hover{
     box-shadow: 0px 0px 20px 0px rgb(255, 0, 0);
     outline: 1px solid rgb(255, 0, 0);
 }
 
-.wordle-cell{
+.wordle-cell.neon{
     margin: 10px;
     display: inline-flex;
     vertical-align: top;
@@ -73,10 +87,10 @@
     border-radius: 3px;
     transition: 0.5s;
     font-size: 60px;
-    background-color: rgba(0, 0, 0, 0.479);
+    background-color: rgba(5, 5, 5, 0.87);
 }
 
-.wordle-cell:hover{
+.wordle-cell.neon:hover{
     box-shadow: 0px 0px 20px 0px rgb(71, 71, 71);
     outline: 1px solid rgb(53, 53, 53);
 }

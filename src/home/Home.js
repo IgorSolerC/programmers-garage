@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { Children, useRef } from "react";
 import './Home.css';
 import {useNavigate} from "react-router-dom";
 import {useState, useEffect} from 'react';
@@ -58,6 +58,7 @@ function Home() {
 function Wordle({hideFunction, hide, onHide}){
 
     const [nextPage, setNextPage] = useState(false)
+    const [theme, setTheme] = useState('neon')
 
     return(
         <Menu
@@ -78,8 +79,8 @@ function Wordle({hideFunction, hide, onHide}){
                 offsetArray={[50, -305, 0]}
                 text='Wordle'
                 id='pages-title'
-            />        
-            <WordleBoard/>                              
+            />
+            <WordleBoard theme={theme}/>                              
         </Menu>
     )
 }

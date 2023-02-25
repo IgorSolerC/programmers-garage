@@ -40,6 +40,24 @@
     white-space:nowrap;
 }
 
+.home-collapte-title{
+    position: absolute;
+}
+
+.home-collapse-title:hover{
+    --h-padding: 70px;
+    --v-padding: 20px;
+    background-color: #161616bb;
+    border-radius: 1000px;
+    padding-top: var(--v-padding);
+    padding-bottom: var(--v-padding);
+    padding-left: var(--h-padding);
+    padding-right: var(--h-padding);
+    text-shadow: 0px 4px 10px #000000b2; 
+    transition: 0.2s;
+    cursor: pointer;
+}
+
 .animated-code-component:hover{
     --h-padding: 70px;
     --v-padding: 20px;
@@ -96,4 +114,11 @@
 @keyframes enter {
     0% {margin-top: -100vh}
     100% {margin-top: 0px}
+}
+
+#home-wordle-themes{
+    margin-top: calc(-50vh);
+    margin-left: calc(-100vw + 300px);
+    font-size:35px;
+    font-weight: 400;
 }

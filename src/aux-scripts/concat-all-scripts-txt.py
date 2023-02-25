@@ -24,7 +24,15 @@ def main():
     concat = []
     get_files(PATH, concat)
     concat = '\n\n'.join(concat)
-    with open(PATH+'\\..\\public\\all-scripts.txt', "w+") as f:
+
+    # NEW_PATH = PATH+'\\..\\public\\all-scripts.txt'
+    NEW_PATH = '\\'.join(PATH.split('\\')[:-1]) + '\\public\\all-scripts.txt'
+    try:
+        os.remove(NEW_PATH)
+    except Exception as e:
+        print(e)
+        
+    with open(NEW_PATH, "w+") as f:
         f.write(concat)
     
 

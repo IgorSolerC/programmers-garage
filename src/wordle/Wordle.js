@@ -1,11 +1,31 @@
 import React from "react"; 
-import { useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef, useMemo} from "react";
 import './Wordle.css'
-import {IsLetter, MakeMatriz, Mod} from '../suporte';
+import {IsLetter, MakeMatriz, Mod, RandomInteger} from '../suporte';
 
-function WordleBoard(){
+function getRandomWord(allWords){
+    let idx = RandomInteger(0, allWords.length-1)
+    return allWords[idx]
+}
 
-    var word = 'TESTE'
+function WordleBoard({theme}){ 
+    
+    
+    const [word, setWord] = useState(false)
+    const [allWords, setAllWords] = useState([])
+
+    useEffect(() => {
+        /* Executa fetch dos dados */
+        let url = '/Experimento-React/possible-words.txt'
+        fetch(url)
+        .then((resp) => resp.text())
+        .then((txt) => {
+            let allWordsAux = txt.split(',')
+            setAllWords(allWordsAux)
+            setWord(getRandomWord(allWordsAux))
+        })
+        .catch((error) => console.log(error))
+    }, [])
 
     const qtdRows = 6    
     const qtdColumns = 5
@@ -16,6 +36,15 @@ function WordleBoard(){
     const [charMatriz, setCharMatriz] = useState(MakeMatriz(qtdRows, qtdColumns, ' '))
     const [resultsMatriz, setResultsMatriz] = useState(MakeMatriz(qtdRows, qtdColumns, ' '))
     const [gameStatus, setGameStatus] = useState('running')
+
+    function restartGame(){
+        crntRowIdx.current = 0
+        setWord(getRandomWord(allWords))
+        setSelectedCell({row:crntRowIdx.current, col:0})
+        setCharMatriz(MakeMatriz(qtdRows, qtdColumns, ' '))
+        setResultsMatriz(MakeMatriz(qtdRows, qtdColumns, ' '))
+        setGameStatus('running')
+    }
 
     function checkAnyEmpty(){
         let crntRow = charMatriz[crntRowIdx.current]
@@ -130,13 +159,26 @@ function WordleBoard(){
 
     function updateResults(){
         let perfect = true
+
+        let full_word = charMatriz[crntRowIdx.current].join('')
+
+        let correct_letters = []
+
+        // Get corrects
         for(let i=0;i<qtdColumns;i++){
-            if(word[i] === charMatriz[crntRowIdx.current][i]){ // Correct
+            if(word[i] === full_word[i]){ // Correct
+                correct_letters.push(full_word[i])
+            }
+        }
+
+        // Get missplaced and incorrects
+        for(let i=0;i<qtdColumns;i++){
+            if(word[i] === full_word[i]){
                 resultsMatriz[crntRowIdx.current][i] = 'is-correct'
-            } else if (word.includes(charMatriz[crntRowIdx.current][i])){ // Missplaced
+            } else if (word.includes(full_word[i]) && !correct_letters.includes(full_word[i]) ){ // Missplaced
                 resultsMatriz[crntRowIdx.current][i] = 'is-missplaced'
                 perfect = false
-            } else {
+            } else { // Incorrect
                 resultsMatriz[crntRowIdx.current][i] = 'is-incorrect'
                 perfect = false
             }
@@ -144,25 +186,35 @@ function WordleBoard(){
         return perfect
     }
 
+    function checkWordExistance(){
+        let inputed_word = charMatriz[crntRowIdx.current].join('')
+        return allWords.includes(inputed_word)
+    }
+
     function keyPress(e){
         var key = e.key
         if(gameStatus == 'running')
             if (e.code == 'Enter'){
-                let isPerfect = updateResults()
-                if (isPerfect){
-                    setGameStatus('won')
-                    setSelectedCell(false)
-                } else {
-                    if(!checkAnyEmpty()){ // Checa se todas as cells estão preenchidas
-                        if(crntRowIdx.current < qtdRows-1){ // Checa se não é a ultima row
-                            crntRowIdx.current += 1
-                            setSelectedCell({row: crntRowIdx.current, col: 0})
-                        } else {
+                if(!checkAnyEmpty()){ // Checa se todas as cells estão preenchidas
+                    if(checkWordExistance()){
+                        let isPerfect = updateResults()
+                        if (isPerfect){
+                            setGameStatus('won')
                             setSelectedCell(false)
-                            if(!isPerfect){
-                                setGameStatus('lost')
+                        } else {
+                            if(crntRowIdx.current < qtdRows-1){ // Checa se não é a ultima row
+                                crntRowIdx.current += 1
+                                setSelectedCell({row: crntRowIdx.current, col: 0})
+                            } else {
+                                setSelectedCell(false)
+                                if(!isPerfect){
+                                    setGameStatus('lost')
+                                    console.log("A palavra era: "+word)
+                                }
                             }
                         }
+                    } else {
+                        console.log("A palavra entrada não existe!")
                     }
                 }
             } else if (e.code == 'Space'){
@@ -191,42 +243,65 @@ function WordleBoard(){
 
     return (
         <div
-            className="wordle-board"
+            className={"wordle-board " + theme}
         >
-            {[...Array(qtdRows)].map((_, idx) => {
-
-                let isCrntRow = idx == crntRowIdx.current
-                let crtnRowClass = isCrntRow ? 'wordle-current-row ' : ''
-
-                return(
-                    <div className={"wordle-row " + crtnRowClass} key={idx}>
-                        {[...Array(qtdColumns)].map((_, cell_idx) => (
-                            <React.Fragment key={cell_idx}>                                
-                                <WordleCell
-                                    gameStatus={gameStatus}
-                                    char={charMatriz[idx][cell_idx]}
-                                    status={resultsMatriz[idx][cell_idx]}
-                                    selectedCell={selectedCell}
-                                    setSelectedCell={setSelectedCell}
-                                    row={idx}
-                                    col={cell_idx}
-                                    isSelectable={isCrntRow}
-                                />
-                            </React.Fragment>
-                        ))}
+            {gameStatus == 'won' ?
+                <div
+                className={'wordle-endscreen '+theme}
+                onClick={restartGame}
+            >
+                <div style={{textAlign: 'center'}}>
+                    <a style={{fontSize:'40px'}}>{"Jogar novamente"}</a>
+                </div>
+            </div>
+            :gameStatus == 'lost' &&
+                <div
+                    className={'wordle-endscreen '+theme}
+                    onClick={restartGame}
+                >
+                    <div style={{textAlign: 'center'}}>
+                        <a style={{fontSize:'40px'}}>{"A palavra era\n"}</a>
+                        <a style={{fontSize:'50px'}}>{word}</a>
                     </div>
-                )
+                </div>
+            }
+            {[...Array(qtdRows)].map((_, idx) => {
+                if(word){
+                    let isCrntRow = idx == crntRowIdx.current
+                    let crtnRowClass = isCrntRow ? 'wordle-current-row ' : ''
+    
+                    return(
+                        <div className={"wordle-row " + crtnRowClass} key={idx}>
+                            {[...Array(qtdColumns)].map((_, cell_idx) => (
+                                <React.Fragment key={cell_idx}>                                
+                                    <WordleCell
+                                        gameStatus={gameStatus}
+                                        char={charMatriz[idx][cell_idx]}
+                                        status={resultsMatriz[idx][cell_idx]}
+                                        selectedCell={selectedCell}
+                                        setSelectedCell={setSelectedCell}
+                                        row={idx}
+                                        col={cell_idx}
+                                        isSelectable={isCrntRow}
+                                        theme={theme}
+                                    />
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    )
+                }
             })}
         </div>
     );
 }
 
-function WordleCell({gameStatus, char, status, row, col, isSelectable, selectedCell, setSelectedCell}){
+function WordleCell({gameStatus, char, status, row, col, isSelectable, selectedCell, setSelectedCell, theme}){
 
     var isSelected = selectedCell.row == row && selectedCell.col == col
     var className = 'wordle-cell '
     className += isSelected ? 'is-selected' : ''
-    className += status
+    className += status + ' '
+    className += theme + ' '
     
     return (
         <div 
