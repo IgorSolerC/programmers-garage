@@ -1,3 +1,1 @@
-# Page url
-
-https://igorsolerc.github.io/Experimento-React/
+# Programmer's Garage
